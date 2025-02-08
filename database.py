@@ -1,2 +1,2 @@
 import repository
-db = repository.Repository ("airports")
+db = repository.Repository ("tracks")

@@ -19,7 +19,7 @@ class Repository:
                     title TEXT NOT NULL,
                     artist TEXT NOT NULL,
                     filename TEXT NOT NULL,
-                    data BLOB NOT NULL
+                    data TEXT NOT NULL
                 )"""
             )
             connection.commit()
@@ -85,7 +85,7 @@ class Repository:
                     "title": row[1],
                     "artist": row[2],
                     "filename": row[3],
-                    "data": row[4]
+                    "data": row[1]
                 }
             else:
                 return None

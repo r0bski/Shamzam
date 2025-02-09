@@ -1,2 +1,2 @@
 import repository
-db = repository.Repository ("tracks")
+db = repository.Repository ("music_tracks")

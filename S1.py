@@ -1,4 +1,3 @@
-# app.py
 from flask import Flask, request, jsonify
 from database import db
 import base64
@@ -17,7 +16,7 @@ def upload_wav():
         return jsonify({"error": "No 'filename' or 'data' key found in the request"}), 400
     
     file = js["filename"]
-    if file== "":
+    if file == "":
         return jsonify({"error": "No selected file"}), 400
 
     wav_data = js["data"]
@@ -40,6 +39,29 @@ def upload_wav():
     })
 
     return jsonify({"message": "File uploaded successfully", "id": new_id}), 201
+
+
+@app.route('/delete', methods=['POST'])
+def delete_track():
+    js = request.get_json()
+    if js is None:
+        return jsonify({"error": "No JSON payload"}), 400
+
+    track_id = js.get("id")
+    if track_id is None:
+        if js.get("title") != None:
+            track_id = db.get_id(js["title"])
+        else:
+            return jsonify({"error": "Missing 'id' key in JSON"}), 400
+
+    # Call remove method on the Repository
+    rows_deleted = db.remove(track_id)
+    if rows_deleted == 0:
+        return jsonify({"error": f"No track found with id={track_id}"}), 404
+
+    return jsonify({"message": f"Track with id={track_id} deleted successfully"}), 200
+
+
 
 if __name__ == "__main__":
     app.run(host="localhost", port=3000, debug=True)

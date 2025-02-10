@@ -90,5 +90,35 @@ class Repository:
             else:
                 return None
             
+    def remove(self, item_id):
+        """
+        Deletes a single row from the table by record_id.
+        Returns the number of rows deleted
+        """
+        with sqlite3.connect(self.database) as connection:
+            cursor = connection.cursor()
+            cursor.execute(f"DELETE FROM {self.table} WHERE id=?", (item_id,))
+            connection.commit()
+            return cursor.rowcount
+        
+    def get_id(self, title):
+        """Returns the id of a givern track
+
+        Args:
+            title (str): Name of the song to be removed
+        
+        Returns:
+            int: the id of the track that matches the input song title
+        """
+        with sqlite3.connect(self.database) as connection:
+            cursor = connection.cursor()
+            cursor.execute(f"SELECT id FROM {self.table} WHERE title=?", (title,))
+            row = cursor.fetchone()
+            if row:
+                return row[0]
+            else:
+                return None
+
+            
 
 

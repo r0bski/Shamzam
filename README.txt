@@ -1,0 +1,1 @@
+python -m unittest admin_tests.py

@@ -85,7 +85,7 @@ class Repository:
                     "title": row[1],
                     "artist": row[2],
                     "filename": row[3],
-                    "data": row[1]
+                    "data": row[4]
                 }
             else:
                 return None
@@ -105,7 +105,7 @@ class Repository:
         """Returns the id of a givern track
 
         Args:
-            title (str): Name of the song to be removed
+            title (str): Name of the song to return
         
         Returns:
             int: the id of the track that matches the input song title

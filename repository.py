@@ -94,6 +94,7 @@ class Repository:
         """
         Deletes a single row from the table by record_id.
         Returns the number of rows deleted
+
         """
         with sqlite3.connect(self.database) as connection:
             cursor = connection.cursor()
@@ -101,7 +102,7 @@ class Repository:
             connection.commit()
             return cursor.rowcount
         
-    def get_id(self, title):
+    def get_id(self, title: str):
         """Returns the id of a givern track
 
         Args:
@@ -109,6 +110,7 @@ class Repository:
         
         Returns:
             int: the id of the track that matches the input song title
+            None: if the id can't be found
         """
         with sqlite3.connect(self.database) as connection:
             cursor = connection.cursor()

@@ -37,7 +37,7 @@ class Testing(unittest.TestCase):
 
     def test_delete(self):
         """
-         Test that an adimn can delete songs from the database using the admin microservice.
+        Test that an adimn can delete songs from the database using the admin microservice.
         """
         # Set endpoint
         endpoint = URI + "delete"
@@ -46,8 +46,21 @@ class Testing(unittest.TestCase):
         hdrs = {"Content-Type":"application/json"}
         js = {"title":song_name}
         # Post json
-        rsp  = requests.post(endpoint,headers=hdrs,json=js)
+        rsp  = requests.delete(endpoint,headers=hdrs,json=js)
         # Test that the song was successfully deleted
         self.assertEqual(rsp.status_code,200)
+
+    def test_get_titles(self):
+        """ Test that an admin can get the titles of tracks in the db
+        """
+        # Set endpoint
+        endpoint = URI + "get_titles"
+        # Send get request
+        rsp = requests.get(endpoint)
+        # Test that it was successful
+        self.assertEqual(rsp.status_code, 200)
+        data = rsp.json()
+        print("Titles:", data.get("titles"))
+
 
         

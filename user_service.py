@@ -4,15 +4,14 @@ import base64
 
 app = Flask(__name__)
 
-@app.route('/get_song', methods=['POST'])
+@app.route('/get_song', methods=['GET'])
 def get_song():
-    js = request.get_json()
-    title = js.get("title")
+    title = request.args.get("title")
     if title is None:
         return jsonify({"error": "No 'title' found in the request"}), 400
     id = db.get_id(title)
     row = db.lookup(id)
-    if row is None:
+    if row is None or id is None:
         return jsonify({"error": "Song not found in database"}), 400
     data = row["data"]
     return jsonify({"message":"Successfully retreved song", "data":data}), 200

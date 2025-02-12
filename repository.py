@@ -3,7 +3,6 @@ import sqlite3
 class Repository:
     def __init__(self, table):
         self.table = table
-        # Database file name will be e.g. "audio_files.db" if table="audio_files"
         self.database = self.table + ".db"
         self.make()
 
@@ -34,10 +33,11 @@ class Repository:
             connection.commit()
 
     def insert(self, js):
-        """
-        Insert a new record.
+        """Insert a new record.
         Expects a dictionary with keys: 'title', 'artist', 'filename', 'data'.
-        Returns the ID of the newly inserted row.
+
+        Returns:
+            int: the ID of the newly inserted row.
         """
         with sqlite3.connect(self.database) as connection:
             cursor = connection.cursor()
@@ -46,13 +46,15 @@ class Repository:
                 (js["title"], js["artist"], js["filename"], js["data"])
             )
             connection.commit()
-            return cursor.lastrowid  # Return the auto-incremented id
+            # Return the auto-incremented id
+            return cursor.lastrowid
 
-    def update(self, js):
-        """
-        Update an existing record by 'id'.
+    def update(self, js)->int:
+        """Update an existing record by 'id'.
         Expects a dictionary with keys: 'id', 'title', 'artist', 'filename', 'data'.
-        Returns the number of rows affected (should be 1 if successful).
+
+        Returns:
+            int: the number of rows affected (should be 1 if successful).
         """
         with sqlite3.connect(self.database) as connection:
             cursor = connection.cursor()
@@ -66,10 +68,11 @@ class Repository:
             return cursor.rowcount
 
     def lookup(self, record_id):
-        """
-        Retrieve a row by its 'id'.
-        Returns a dictionary with 'id', 'title', 'artist', 'filename', 'data',
-        or None if not found.
+        """Retrieve a row by its ID.
+
+        Returns:
+            Dictionary: a dictionary with 'id', 'title', 'artist', 'filename', 'data',
+            None: if not found.
         """
         with sqlite3.connect(self.database) as connection:
             cursor = connection.cursor()
@@ -90,11 +93,14 @@ class Repository:
             else:
                 return None
             
-    def remove(self, item_id):
-        """
-        Deletes a single row from the table by record_id.
-        Returns the number of rows deleted
+    def remove(self, item_id: int) -> int:
+        """Deletes a single row from the table by record_id.
 
+        Args:
+            item_id (int): ID of item to be deleted
+
+        Returns:
+            int: number of items deleted
         """
         with sqlite3.connect(self.database) as connection:
             cursor = connection.cursor()
@@ -103,7 +109,7 @@ class Repository:
             return cursor.rowcount
         
     def get_id(self, title: str):
-        """Returns the id of a givern track
+        """Returns the id of a givern track.
 
         Args:
             title (str): Name of the song to return
@@ -120,6 +126,16 @@ class Repository:
                 return row[0]
             else:
                 return None
+            
+    def get_track_titles(self):
+        with sqlite3.connect(self.database) as connection:
+            cursor = connection.cursor()
+            cursor.execute(f"SELECT title FROM {self.table}")
+            rows = cursor.fetchall()
+            titles = []
+            for title in rows:
+                titles.append(title)
+            return titles
 
             
 

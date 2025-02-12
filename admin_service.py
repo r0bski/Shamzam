@@ -9,10 +9,20 @@ def upload_wav():
     """
     Upload a WAV file and store it in the SQLite database
     using the Repository class (db).
+        
+        Expects: 
+        {
+        "title": <"song name">,
+        "artist": <"artist name">,
+        "filename": <"file name">,
+        "data": <base64>
+        }
+        
+        Returns a JSON response indicating success or failure.
     """
     js = request.get_json()
-    # Ensure the 'file' part exists
-    if js["filename"]== None or js["data"] == None:
+    # Ensure the 'file' exists
+    if js["filename"] == None or js["data"] == None:
         return jsonify({"error": "No 'filename' or 'data' key found in the request"}), 400
     
     file = js["filename"]
@@ -41,25 +51,47 @@ def upload_wav():
     return jsonify({"message": "File uploaded successfully", "id": new_id}), 201
 
 
-@app.route('/delete', methods=['POST'])
+@app.route('/delete', methods=['DELETE'])
 def delete_track():
+    """Removes a given track from the database using the track's ID or title.
+    Accepts a JSON body with either:
+      {
+        "id": <some integer>
+      }
+    or
+      {
+        "title": "<song title>"
+      }
+
+    Returns a JSON response indicating success or failure.
+    """
     js = request.get_json()
     if js is None:
         return jsonify({"error": "No JSON payload"}), 400
 
     track_id = js.get("id")
     if track_id is None:
-        if js.get("title") != None:
-            track_id = db.get_id(js["title"])
+        # If 'id' is not provided, look for 'title'
+        track_title = js.get("title")
+        if track_title is not None:
+            track_id = db.get_id(track_title)  # your method to get an ID from a title
         else:
-            return jsonify({"error": "Missing 'id' key in JSON"}), 400
+            return jsonify({"error": "Missing 'id' or 'title' key in JSON"}), 400
 
-    # Call remove method on the Repository
+    # Attempt removal from the repository
     rows_deleted = db.remove(track_id)
     if rows_deleted == 0:
         return jsonify({"error": f"No track found with id={track_id}"}), 404
 
     return jsonify({"message": f"Track with id={track_id} deleted successfully"}), 200
+
+
+@app.route('/get_titles', methods=['GET'])
+def get_titles():
+    """Returns the titles of all songs in the database
+    """
+    titles = db.get_track_titles()
+    return jsonify({"titles": titles}), 200
 
 
 

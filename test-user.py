@@ -12,14 +12,12 @@ class Testing(unittest.TestCase):
         NOTE that this test only passes if the song "good 4 u" is on the database,
             you can add it by running upload_song() in add_songs.py
         """
-        # Set endpoint
-        endpoint = URI + "/get_song"
+        # Set endpoint and re
         song_name = "good 4 u"
-        # Define json header and content
-        hdrs = {"Content-Type":"application/json"}
-        js = {"title":song_name}
+        endpoint = URI + f"/get_song?title={song_name}"
+
         # Post request to user microservice
-        rsp  = requests.post(endpoint,headers=hdrs,json=js)
+        rsp  = requests.get(endpoint)
         data = rsp.json()["data"]
         # Decode the data from base 64
         song = base64.b64decode(data)

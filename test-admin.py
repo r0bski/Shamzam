@@ -1,7 +1,6 @@
 import requests
 import base64
-import unittest
-from database import db 
+import unittest 
 
 URI = "http://localhost:3000/"
 
@@ -17,9 +16,9 @@ class Testing(unittest.TestCase):
         song_name = "Don't Look Back In Anger"
 
         # Open and read wav file in binary mode
-        f = open(f"music/{file_name}","rb")
-        wav = f.read()
-        f.close()
+        file = open(f"music/{file_name}","rb")
+        wav = file.read()
+        file.close()
 
         # Encode wav data into base64 so it can be posted in json
         music = base64.b64encode(wav).decode("ascii")

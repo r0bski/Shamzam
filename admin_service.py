@@ -15,7 +15,7 @@ def upload_wav():
         "title": <"song name">,
         "artist": <"artist name">,
         "filename": <"file name">,
-        "data": <base64>
+        "data": <base64-encoded WAV data>
         }
         
         Returns a JSON response indicating success or failure.

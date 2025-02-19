@@ -20,14 +20,21 @@ def get_song():
     Returns:
         base64-encoded WAV data: Encoded song data
     """
+    # Retrive song title from request
     title = request.args.get("title")
     if title is None:
         return jsonify({"error": "No 'title' found in the request"}), 400
+    
+    # Get id of song in database
     id = db.get_id(title)
+    # Look up the song in the database using its id
     row = db.lookup(id)
+
     if row is None or id is None:
         return jsonify({"error": "Song not found in database"}), 404
     data = row["data"]
+
+    # Return the song data if it was successful
     return jsonify({"message":"Successfully retreved song", "data":data}), 200
 
 
@@ -48,12 +55,12 @@ def frag_recognition():
     if js is None:
         return jsonify({"error": "No JSON payload"}), 400
 
-    # Get base64-encoded song fragment
+    # Get base64 encoded song fragment
     frag_base64 = js.get("fragment")
     if not frag_base64:
         return jsonify({"error": "Song fragment data not in JSON payload"}), 400
 
-    # Recognize via Audd.io
+    # Recognise using Audd.io
     result = audd_recognition(frag_base64)
     if not result or 'result' not in result or not result['result']:
         return jsonify({"error": "Failed to recognize song"}), 500
@@ -75,6 +82,7 @@ def frag_recognition():
     artist = song_dict.get("artist", "Unknown Artist")
     data = song_dict.get("data", "")
 
+    # Return base64 encoded song data
     return jsonify({
         "message": f"Successfully retrieved '{title}' by {artist}",
         "data": data

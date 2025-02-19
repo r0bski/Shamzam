@@ -26,19 +26,25 @@ def upload_wav():
         return jsonify({"error": "No 'filename' or 'data' key found in the request"}), 400
     
     file = js["filename"]
-    if file == "":
+    if file == "" or type(file) != str:
         return jsonify({"error": "No selected file"}), 400
 
     wav_data = js["data"]
     if wav_data == "":
         return jsonify({"error": "Data is empty"}), 400
-
+    
     title = js["title"]
+    if title == "" or type(title) != str:
+        return jsonify({"error": "Title not givern"}), 400
+
     artist = js["artist"]
-    if title == None:
-        title = "Unknown"
     if artist == None:
         artist = "Unknown"
+
+    try:
+        base64.b64decode(wav_data)
+    except Exception:
+        return jsonify({"error": "Song data not valid"}), 400
 
     # Insert record into the database using the Repository
     new_id = db.insert({
@@ -48,7 +54,10 @@ def upload_wav():
         "data": wav_data
     })
 
-    return jsonify({"message": "File uploaded successfully", "id": new_id}), 201
+    if new_id == None:
+        return jsonify({"error": "Failed to add song to database"}), 500
+    else:
+        return jsonify({"message": "File uploaded successfully", "id": new_id}), 201
 
 
 @app.route('/delete', methods=['DELETE'])

@@ -1,6 +1,7 @@
 import requests
 import base64
 import unittest 
+from database import db
 
 URI = "http://localhost:3000/"
 
@@ -34,6 +35,29 @@ class Testing(unittest.TestCase):
         # Test if song was successfully added to db
         self.assertEqual(rsp.status_code,201)
 
+
+    def test_upload_failure(self):
+        # Set the endpoint
+        endpoint = URI + "upload_wav"
+
+        hdrs = {"Content-Type":"application/json"}
+        js = {"title":"test",
+            "artist":"test",
+            "filename":"file",
+            "data":"music"}
+        rsp  = requests.post(endpoint,headers=hdrs,json=js)
+        self.assertEqual(rsp.status_code,400)
+
+        js = {"title":"",
+            "artist":"",
+            "filename":"",
+            "data":""}
+        rsp  = requests.post(endpoint,headers=hdrs,json=js)
+        self.assertEqual(rsp.status_code,400)
+
+
+
+
     def test_delete(self):
         """
         Test that an adimn can delete songs from the database using the admin microservice.
@@ -48,6 +72,30 @@ class Testing(unittest.TestCase):
         rsp  = requests.delete(endpoint,headers=hdrs,json=js)
         # Test that the song was successfully deleted
         self.assertEqual(rsp.status_code,200)
+
+
+    def test_delete_failure(self):
+        """Test that the microservice will return the correct errer codes 
+            when sent the wrong data
+        """
+        # Set endpoint
+        endpoint = URI + "delete"
+        song_name = "Mr Blue Sky"
+        # define header and json content
+        hdrs = {"Content-Type":"application/json"}
+        js = {"title":song_name}
+
+        # Post json with song name not in database
+        rsp  = requests.delete(endpoint,headers=hdrs,json=js)
+        # Test that the microservice returns 404 error
+        self.assertEqual(rsp.status_code,404)
+
+        # Send request with no json 
+        js = {}
+        rsp  = requests.delete(endpoint,headers=hdrs,json=js)
+        # Test if error 400 is returned
+        self.assertEqual(rsp.status_code, 400)
+
 
     def test_get_titles(self):
         """ Test that an admin can get the titles of tracks in the db

@@ -2,6 +2,10 @@ import requests
 import base64
 import unittest
 
+# TODO make unhappy path tests
+# TODO make endpoint diagrams
+
+
 URI = "http://localhost:3001/"
 
 class Testing(unittest.TestCase):
@@ -19,7 +23,6 @@ class Testing(unittest.TestCase):
         rsp = requests.get(endpoint)
 
         # Check song was successfully recieved
-        print(rsp.status_code)
         self.assertEqual(rsp.status_code,200)
 
         data = rsp.json()["data"]
@@ -38,6 +41,18 @@ class Testing(unittest.TestCase):
         file = open("rsp: good 4 u.wav","wb")
         file.write(song)
         file.close()
+        
+
+    def test_song_not_found(self):
+        """Test that a 404 response is givern when the user attempts
+            to get a song that is not found in the database"""
+        # Set endpoint and title
+        song_name = "Mr Blue Sky"
+        endpoint = URI + f"/get_song?title={song_name}"
+        # Post request to user microservice
+        rsp = requests.get(endpoint)
+        # Test that a 404 response code is givern
+        self.assertEqual(rsp.status_code,404)
  
 
     
@@ -46,15 +61,22 @@ class Testing(unittest.TestCase):
             a music track in the database
         """
         endpoint = URI + "/frag_recognition"
+
+        # Open and read music file
         file = open("music/~Blinding Lights.wav", "rb")
         frag = file.read()
         file.close()
+
+        # Encode wav data to base64
         frag_base64 = base64.b64encode(frag).decode("ascii")
+        # Define request content
         hdr = {"Content-Type":"application/json"}
         js = {"fragment": frag_base64}
+        # Send request and test if it was sucessfull
         rsp = requests.post(endpoint, headers=hdr, json=js)
         self.assertEqual(rsp.status_code, 200)
 
+        # Get song data from the response
         data = rsp.json()["data"]
         # Decode the data from base 64
         song = base64.b64decode(data)

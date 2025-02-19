@@ -2,8 +2,6 @@ import requests
 import base64
 import unittest
 
-# TODO make unhappy path tests
-# TODO make endpoint diagrams
 
 
 URI = "http://localhost:3001/"
@@ -41,7 +39,7 @@ class Testing(unittest.TestCase):
         file = open("rsp: good 4 u.wav","wb")
         file.write(song)
         file.close()
-        
+
 
     def test_song_not_found(self):
         """Test that a 404 response is givern when the user attempts

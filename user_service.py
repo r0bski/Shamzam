@@ -18,7 +18,7 @@ def get_song():
 
 
     Returns:
-        base64-encoded WAV data: Encoded song data
+        base64: Encoded song data
     """
     # Retrive song title from request
     title = request.args.get("title")
@@ -41,15 +41,15 @@ def get_song():
 @app.route('/frag_recognition', methods=['POST'])
 def frag_recognition():
     """
+    1) Decodes the base64 fragment and sends to Audd.io for recognition.
+    2) If recognized, get the song title from Audd.io's response.
+    3) Look up the title in the local database.
+    4) If found, return the stored data for that track.
+
     Expects:
     {
-      "fragment": "<base64-encoded WAV data>"
+      "fragment": "<base64 encoded WAV data>"
     }
-
-    1) Decodes the base64 string and sends to Audd.io for recognition.
-    2) If recognized, we get the song title from Audd.io's response.
-    3) Looks up that title in the local database.
-    4) If found, returns the stored data for that track.
     """
     js = request.get_json()
     if js is None:
@@ -75,6 +75,7 @@ def frag_recognition():
     if track_id is None:
         return jsonify({"error": f"Song '{title}' not found in database"}), 404
 
+    # Get song from database
     song_dict = db.lookup(track_id)
     if not song_dict:
         return jsonify({"error": "Song not found in database"}), 404
@@ -91,28 +92,36 @@ def frag_recognition():
 
 
 def audd_recognition(frag_base64: str):
+    """Sends a base64-encoded wav fragment to the Audd.io API for recognition.
+        Returns a dictionary parsed from Audd.io's json response, or None if it fails.
+
+    Args:
+        frag_base64 (str): base64 encoded song fragment
+
+    Returns:
+        dict: dictionary containing json response from Audd.io
+        None: if it fails to recognise the song
     """
-    Sends a base64-encoded wav fragment to the Audd.io API for recognition.
-    Returns a dictionary parsed from Audd.io's JSON response, or None if it fails.
-    """
-    # Decode the base64 string to raw wav bytes
+    # Decode the base64 string to wav bytes
     wav_bytes = base64.b64decode(frag_base64)
 
-    # Prepare form fields
+    # define json data
     data = {
         'api_token': KEY,
         'return': 'apple_music,spotify'
     }
 
-    # Prepare the file parameter for request
+    # Prepare the file for request
     file = {
         'file': ('fragment.wav', wav_bytes, 'audio/wav')
     }
 
-    # Make the POST request
+    # Make the post request
     response = requests.post(AUDD_API, data=data, files=file)
     
+    # Check response code
     if response.status_code == 200:
+        # Try return the API's response
         try:
             return response.json() 
         except Exception as e:

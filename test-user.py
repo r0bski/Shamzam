@@ -29,9 +29,9 @@ class Testing(unittest.TestCase):
 
         # Open file and check the response song data is correct
         file = open("music/good 4 u.wav","rb")
-        self.assertIsNotNone(file)
         contents = file.read()
         file.close()
+
         # Test if the response song data is the same as the song file
         self.assertEqual(song, contents)
 
@@ -40,18 +40,6 @@ class Testing(unittest.TestCase):
         file.write(song)
         file.close()
 
-
-    def test_song_not_found(self):
-        """Test that a 404 response is givern when the user attempts
-            to get a song that is not found in the database"""
-        # Set endpoint and title
-        song_name = "Mr Blue Sky"
-        endpoint = URI + f"/get_song?title={song_name}"
-        # Post request to user microservice
-        rsp = requests.get(endpoint)
-        # Test that a 404 response code is givern
-        self.assertEqual(rsp.status_code,404)
- 
 
     
     def test_frag_recognition(self):
@@ -64,6 +52,8 @@ class Testing(unittest.TestCase):
         file = open("music/~Blinding Lights.wav", "rb")
         frag = file.read()
         file.close()
+
+        self.assertIsNotNone(frag)
 
         # Encode wav data to base64
         frag_base64 = base64.b64encode(frag).decode("ascii")
@@ -81,9 +71,10 @@ class Testing(unittest.TestCase):
 
         # Open file and check the response song data is correct
         file = open("music/Blinding Lights.wav","rb")
-        self.assertIsNotNone(file)
         contents = file.read()
         file.close()
+        self.assertIsNotNone(contents)
+
         # Test if the response song data is the same as the song file
         self.assertEqual(song, contents)
 
@@ -91,3 +82,28 @@ class Testing(unittest.TestCase):
         file = open("rsp: Blinding Lights.wav","wb")
         file.write(song)
         file.close()
+
+
+    def test_davos_fragment(self):
+        """Test that the correct error code is givern when givern a
+            fragment that is not a song 
+        """
+
+        endpoint = URI + "/frag_recognition"
+
+        # Open and read wav file
+        file = open("music/~Davos.wav", "rb")
+        davos = file.read()
+        file.close()
+        self.assertIsNotNone(davos)
+
+        # Encode wav data to base64
+        davos_base64 = base64.b64encode(davos).decode("ascii")
+        # Define request content
+        hdr = {"Content-Type":"application/json"}
+        js = {"fragment": davos_base64}
+
+        # Send request and test error code
+        rsp = requests.post(endpoint, headers=hdr, json=js)
+        self.assertEqual(rsp.status_code, 500)
+

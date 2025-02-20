@@ -29,6 +29,7 @@ class Repository:
         """
         with sqlite3.connect(self.database) as connection:
             cursor = connection.cursor()
+            # Delete all rows
             cursor.execute(f"DELETE FROM {self.table}")
             connection.commit()
 
@@ -41,6 +42,7 @@ class Repository:
         """
         with sqlite3.connect(self.database) as connection:
             cursor = connection.cursor()
+            # Insert new row with the provided values
             cursor.execute(
                 f"INSERT INTO {self.table} (title, artist, filename, data) VALUES (?, ?, ?, ?)",
                 (js["title"], js["artist"], js["filename"], js["data"])
@@ -130,8 +132,10 @@ class Repository:
     def get_track_titles(self):
         with sqlite3.connect(self.database) as connection:
             cursor = connection.cursor()
+            # Select all titles
             cursor.execute(f"SELECT title FROM {self.table}")
             rows = cursor.fetchall()
+            # Build and return list
             titles = []
             for title in rows:
                 titles.append(title)

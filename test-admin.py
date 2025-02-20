@@ -1,7 +1,7 @@
 import requests
 import base64
 import unittest 
-from database import db
+
 
 URI = "http://localhost:3000/"
 

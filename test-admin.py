@@ -63,7 +63,7 @@ class Testing(unittest.TestCase):
         Test that an adimn can delete songs from the database using the admin microservice.
         """
         # Set endpoint
-        endpoint = URI + "delete"
+        endpoint = URI + "delete_track"
         song_name = "Don't Look Back In Anger"
         # define header and json content
         hdrs = {"Content-Type":"application/json"}
@@ -79,7 +79,7 @@ class Testing(unittest.TestCase):
             when sent the wrong data
         """
         # Set endpoint
-        endpoint = URI + "delete"
+        endpoint = URI + "delete_track"
         song_name = "Mr Blue Sky"
         # define header and json content
         hdrs = {"Content-Type":"application/json"}

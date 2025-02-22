@@ -35,10 +35,10 @@ def get_song():
     data = row["data"]
 
     # Return the song data if it was successful
-    return jsonify({"message":"Successfully retreved song", "data":data}), 200
+    return jsonify({"message":f"Successfully retreved {title}", "data":data}), 200
 
 
-@app.route('/frag_recognition', methods=['POST'])
+@app.route('/fragment_recognition', methods=['POST'])
 def frag_recognition():
     """
     1) Decodes the base64 fragment and sends to Audd.io for recognition.

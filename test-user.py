@@ -46,7 +46,7 @@ class Testing(unittest.TestCase):
         """Test that the user can convert a music fragment into 
             a music track in the database
         """
-        endpoint = URI + "/frag_recognition"
+        endpoint = URI + "/fragment_recognition"
 
         # Open and read music file
         file = open("music/~Blinding Lights.wav", "rb")
@@ -89,7 +89,7 @@ class Testing(unittest.TestCase):
             fragment that is not a song 
         """
 
-        endpoint = URI + "/frag_recognition"
+        endpoint = URI + "/fragment_recognition"
 
         # Open and read wav file
         file = open("music/~Davos.wav", "rb")

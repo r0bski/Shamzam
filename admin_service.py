@@ -65,7 +65,7 @@ def upload_wav():
         return jsonify({"message": "File uploaded successfully", "id": new_id}), 201
 
 
-@app.route('/delete', methods=['DELETE'])
+@app.route('/delete_track', methods=['DELETE'])
 def delete_track():
     """Removes a given track from the database using the track's ID or title.
     Accepts a JSON body with either:
@@ -100,7 +100,8 @@ def delete_track():
         return jsonify({"error": f"No track found with id={track_id}"}), 404
     
     # Return the id of the deleted track if successful
-    return jsonify({"message": f"Track with id={track_id} deleted successfully"}), 200
+    return jsonify({"message": f"Track with id={track_id} deleted successfully",
+                    "id": track_id}), 200
 
 
 @app.route('/get_titles', methods=['GET'])
@@ -108,6 +109,10 @@ def get_titles():
     """Returns the titles of all songs in the database
     """
     titles = db.get_track_titles()
+    
+    if titles is None:
+        return jsonify({"error": f"Unable to get titles"}), 500
+    
     return jsonify({"titles": titles}), 200
 
 

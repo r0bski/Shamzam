@@ -1,3 +1,6 @@
+##### This module clears the data base and adds songs to it
+
+
 import requests
 import base64
 from database import db 

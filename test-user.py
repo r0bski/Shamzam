@@ -40,6 +40,7 @@ class Testing(unittest.TestCase):
         file.write(song)
         file.close()
 
+
     def test_song_not_found(self):
         """Test that the microservice returns the correct error code 
             when a song that's not in the data base is requested"""
@@ -50,7 +51,7 @@ class Testing(unittest.TestCase):
         # Post request to user microservice
         rsp = requests.get(endpoint)
 
-        # Check song was successfully recieved
+        # Check error code
         self.assertEqual(rsp.status_code,404)
 
     
@@ -121,6 +122,8 @@ class Testing(unittest.TestCase):
 
     
     def test_fragment_not_found_in_db(self):
+        """Test when song is recognised but not found in the data base"""
+        # Set endpoint
         endpoint = URI + "/fragment_recognition"
 
         # Open and read wav file

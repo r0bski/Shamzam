@@ -40,6 +40,18 @@ class Testing(unittest.TestCase):
         file.write(song)
         file.close()
 
+    def test_song_not_found(self):
+        """Test that the microservice returns the correct error code 
+            when a song that's not in the data base is requested"""
+        # Set endpoint and title
+        song_name = "Mr Blue Sky"
+        endpoint = URI + f"/get_song?title={song_name}"
+
+        # Post request to user microservice
+        rsp = requests.get(endpoint)
+
+        # Check song was successfully recieved
+        self.assertEqual(rsp.status_code,404)
 
     
     def test_frag_recognition(self):
@@ -106,4 +118,24 @@ class Testing(unittest.TestCase):
         # Send request and test error code
         rsp = requests.post(endpoint, headers=hdr, json=js)
         self.assertEqual(rsp.status_code, 500)
+
+    
+    def test_fragment_not_found_in_db(self):
+        endpoint = URI + "/fragment_recognition"
+
+        # Open and read wav file
+        file = open("music/~Everybody (Backstreets Back) (Radio Edit).wav", "rb")
+        data = file.read()
+        file.close()
+        self.assertIsNotNone(data)
+
+        # Encode wav data to base64
+        data_base64 = base64.b64encode(data).decode("ascii")
+        # Define request content
+        hdr = {"Content-Type":"application/json"}
+        js = {"fragment": data_base64}
+
+        # Send request and test error code
+        rsp = requests.post(endpoint, headers=hdr, json=js)
+        self.assertEqual(rsp.status_code, 404)
 
